@@ -24,13 +24,28 @@ export default function Pociones() {
     }
   };
 
+  const eliminarPocion = async (id) => {
+    try {
+      // Eliminar del Backend
+      await fetch(`${API_ENDPOINT}/pociones/eliminar/${id}`, {
+        method: 'DELETE',
+      });
+
+      // Mostrar las pociones
+      fetchPotions();
+
+    } catch (error) {
+      console.error('Error al eliminar la poción:', error);
+    }
+  };
+
   return (
     <Container fluid className="pt-5 bg-secondary text-light" id="pociones" style={{ width: "100%" }}>
       <h1 className="text-center mb-4">Pociones</h1>
       <Row xs={1} sm={1} md={2} lg={3} xl={3} className="justify-content-center">
         {pociones.map((pocion) => (
           <Col key={pocion.id} className="mb-5 d-flex justify-content-center">
-            <CardPotion pocion={pocion} />
+            <CardPotion pocion={pocion} eliminarPocion={eliminarPocion} />
           </Col>
         ))}
       </Row>
