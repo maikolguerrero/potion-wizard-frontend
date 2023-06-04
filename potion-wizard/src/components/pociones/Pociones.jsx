@@ -6,7 +6,7 @@ import CardPotion from './CardPotion';
 import API_ENDPOINT from '../../../config/api_endpoint';
 import NavbarResponsive from '../Navbar';
 
-export default function Pociones() {
+export default function Pociones({ fetchIngredientes }) {
   const [pociones, setPociones] = useState([]);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function Pociones() {
 
   return (
     <>
-      <NavbarResponsive fetchPotions={fetchPotions} />
+      <NavbarResponsive fetchPotions={fetchPotions} fetchIngredientes={fetchIngredientes} />
       <Container fluid className="pt-5 bg-secondary text-light" id="pociones" style={{ width: "100%" }}>
         <h1 className="text-center mb-4">Pociones</h1>
         <Row xs={1} sm={1} md={2} lg={3} xl={3} className="justify-content-center">

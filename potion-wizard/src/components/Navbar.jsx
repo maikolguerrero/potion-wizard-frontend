@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import FormCrearPocion from './formularios/FormPocion';
+import FormPocion from './formularios/FormPocion';
 
-export default function NavbarResponsive({ fetchPotions }) {
+export default function NavbarResponsive({ fetchPotions, fetchIngredientes }) {
   const [showForm, setShowForm] = useState(false);
 
   const handleCreatePotionClick = () => {
@@ -29,7 +29,7 @@ export default function NavbarResponsive({ fetchPotions }) {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      {showForm && <FormCrearPocion handleClose={handleCloseForm} fetchPotions={fetchPotions} />}
+      {showForm && <FormPocion handleClose={handleCloseForm} fetchPotions={fetchPotions} fetchIngredientes={fetchIngredientes} />}
     </Navbar>
   );
 }

@@ -6,7 +6,6 @@ import Ingredientes from "./components/Ingredientes/Ingredientes";
 export default function App() {
   return (
     <>
-      <Pociones />
       <Ingredientes />
       <Footer />
     </>

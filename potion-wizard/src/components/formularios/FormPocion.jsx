@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import API_ENDPOINT from '../../../config/api_endpoint';
 
-export default function FormCrearPocion({ handleClose, fetchPotions }) {
+export default function FormCrearPocion({ handleClose, fetchPotions, fetchIngredientes }) {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precio, setPrecio] = useState('');
@@ -114,6 +114,7 @@ export default function FormCrearPocion({ handleClose, fetchPotions }) {
 
       vaciarForm();
       await fetchPotions();
+      await fetchIngredientes();
       handleClose();
     } catch (error) {
       console.error('Error al enviar los datos:', error);
