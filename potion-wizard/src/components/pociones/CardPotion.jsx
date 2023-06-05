@@ -4,13 +4,20 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import API_ENDPOINT from '../../../config/api_endpoint.js';
 import ConfirmationModal from '../ConfirmationModal.jsx';
+import FormPocion from '../formularios/FormPocion.jsx';
 
-export default function CardPotion({ pocion, eliminarPocion }) {
+export default function CardPotion({ pocion, eliminarPocion, fetchPotions, fetchIngredientes }) {
   const { id, nombre, descripcion, categoria, cantidad, precio, ingredientes, imagen } = pocion;
   const [showModal, setShowModal] = useState(false);
 
-  const handleEditar = () => {
-    // Para cuando se tenga la funcionalidad de editar
+  const [showForm, setShowForm] = useState(false);
+
+  const handleEditPotionClick = () => {
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
   };
 
   const handleEliminar = () => {
@@ -48,7 +55,7 @@ export default function CardPotion({ pocion, eliminarPocion }) {
           </ListGroup.Item>
         </ListGroup>
         <Card.Body className="d-flex text-center align-items-center justify-content-center">
-          <Button variant="warning" onClick={handleEditar} className='mx-4'>
+          <Button variant="warning" onClick={handleEditPotionClick} className='mx-4'>
             <img src="../../assets/edit.svg" alt="icon-edit" style={{ width: '25px', height: 'auto' }} />
           </Button>
           <Button variant="danger" onClick={handleEliminar} className='mx-4'>
@@ -56,6 +63,14 @@ export default function CardPotion({ pocion, eliminarPocion }) {
           </Button>
         </Card.Body>
       </Card>
+
+      {showForm && <FormPocion
+        handleClose={handleCloseForm}
+        fetchPotions={fetchPotions}
+        fetchIngredientes={fetchIngredientes}
+        isEditing={true}
+        editPotion={pocion}
+      />}
 
       <ConfirmationModal
         show={showModal}

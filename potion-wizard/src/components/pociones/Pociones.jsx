@@ -48,7 +48,7 @@ export default function Pociones({ fetchIngredientes }) {
         <Row xs={1} sm={1} md={2} lg={3} xl={3} className="justify-content-center">
           {pociones.map((pocion) => (
             <Col key={pocion.id} className="mb-5 d-flex justify-content-center">
-              <CardPotion pocion={pocion} eliminarPocion={eliminarPocion} />
+              <CardPotion pocion={pocion} eliminarPocion={eliminarPocion} fetchPotions={fetchPotions} fetchIngredientes={fetchIngredientes} />
             </Col>
           ))}
         </Row>

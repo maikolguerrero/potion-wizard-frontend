@@ -29,7 +29,11 @@ export default function NavbarResponsive({ fetchPotions, fetchIngredientes }) {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      {showForm && <FormPocion handleClose={handleCloseForm} fetchPotions={fetchPotions} fetchIngredientes={fetchIngredientes} />}
+      {showForm && <FormPocion
+        handleClose={handleCloseForm}
+        fetchPotions={fetchPotions}
+        fetchIngredientes={fetchIngredientes}
+        isEditing={false} />}
     </Navbar>
   );
 }
