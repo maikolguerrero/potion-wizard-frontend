@@ -32,7 +32,7 @@ export default function Ingredientes() {
         <h1 className="text-center mb-4">Ingredientes</h1>
         <Row xs={1} sm={1} md={1} lg={1} xl={1} className="justify-content-center mx-1">
           <Col className="mb-5 d-flex justify-content-center">
-            <TableIngredientes ingrediente={ingredientes} />
+            <TableIngredientes ingredientes={ingredientes} />
           </Col>
         </Row>
       </Container>

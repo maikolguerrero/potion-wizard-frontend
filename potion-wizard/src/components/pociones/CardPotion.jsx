@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import API_ENDPOINT from '../../../config/api_endpoint.js';
-import ConfirmationModal from '../ConfirmationModal.jsx';
+import ConfirmationModal from '../alertas/ConfirmationModal.jsx';
 import FormPocion from '../formularios/FormPocion.jsx';
 
 export default function CardPotion({ pocion, eliminarPocion, fetchPotions, fetchIngredientes }) {

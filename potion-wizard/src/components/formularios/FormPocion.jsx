@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import API_ENDPOINT from '../../../config/api_endpoint';
+import CustomAlert from '../alertas/CustomAlert';
 
 export default function FormPocion({ handleClose, fetchPotions, fetchIngredientes, isEditing, editPotion }) {
   const [titulo, setTitulo] = useState('');
@@ -26,6 +27,10 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
   const [ingredienteError, setIngredienteError] = useState('');
   const [imagenError, setImagenError] = useState('');
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [durationAlert, setDurationAlert] = useState(3000);
+
   useEffect(() => {
     obtenerCategorias();
     obtenerIngredientes();
@@ -36,6 +41,7 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
     }
   }, [isEditing]);
 
+
   const obtenerCategorias = async () => {
     try {
       const response = await fetch(`${API_ENDPOINT}/categorias`);
@@ -43,6 +49,8 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       setCategorias(data.data);
     } catch (error) {
       console.error('Error al obtener las categorías:', error);
+      setMessageAlert('Error al obtener las categorías:', error);
+      setShowAlert(true);
     }
   };
 
@@ -53,6 +61,8 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       setIngredientes(data.data);
     } catch (error) {
       console.error('Error al obtener los ingredientes:', error);
+      setMessageAlert('Error al obtener las categorías:', error);
+      setShowAlert(true);
     }
   };
 
@@ -98,6 +108,8 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       }
     } catch (error) {
       console.error('Error al obtener la categoría:', error);
+      setMessageAlert('Error al obtener la categoría:', error);
+      setShowAlert(true);
     }
   };
 
@@ -116,6 +128,8 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       }
     } catch (error) {
       console.error('Error al obtener la categoría:', error);
+      setMessageAlert('Error al obtener la categoría:', error);
+      setShowAlert(true);
     }
   };
 
@@ -127,7 +141,6 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
     obtenerCategoriaPorNombre(editPotion.categoria);
     obtenerIngredientesPorNombre(editPotion.ingredientes);
   };
-
 
   const handleCancel = () => {
     vaciarForm();
@@ -152,6 +165,10 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
     return ingredientesSeleccionados.length >= 2;
   };
 
+  const waitAndExecute = (callback, delay) => {
+    setTimeout(callback, delay);
+  };
+
   // Agregar la nueva poción al backend
   const agregarPocion = async (formData) => {
     try {
@@ -161,14 +178,26 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       });
 
       const data = await response.json();
-      console.log('Respuesta del backend:', data.message);
 
-      vaciarForm();
-      await fetchPotions();
-      await fetchIngredientes();
-      handleClose();
+      if (data.status == 201) {
+        vaciarForm();
+        await fetchPotions();
+        await fetchIngredientes();
+      }
+
+      setMessageAlert(data.message);
+      setShowAlert(true);
+
+      if (data.status == 201) {
+        waitAndExecute(() => {
+          handleClose();
+        }, durationAlert);
+      }
+
     } catch (error) {
       console.error('Error al enviar los datos:', error);
+      setMessageAlert('Error al enviar los datos:', error);
+      setShowAlert(true);
     }
   }
 
@@ -181,16 +210,32 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
       });
 
       const data = await response.json();
-      console.log('Respuesta del backend:', data.message);
 
-      vaciarForm();
-      await fetchPotions();
-      await fetchIngredientes();
-      handleClose();
+      if (data.status == 200) {
+        vaciarForm();
+        await fetchPotions();
+        await fetchIngredientes();
+      }
+
+      setMessageAlert(data.message);
+      setShowAlert(true);
+
+      if (data.status == 200) {
+        waitAndExecute(() => {
+          handleClose();
+        }, durationAlert);
+      }
+
     } catch (error) {
       console.error('Error al enviar los datos:', error);
+      setMessageAlert('Error al enviar los datos:', error);
+      setShowAlert(true);
     }
   }
+
+  const handleDismiss = () => {
+    setShowAlert(false);
+  };
 
 
   const handleSubmit = (e) => {
@@ -262,116 +307,125 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
   };
 
   return (
-    <Modal show={true} onHide={handleClose} centered className='m-0 p-0'>
-      <Modal.Header closeButton>
-        <Modal.Title>{titulo}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form noValidate onSubmit={handleSubmit}>
-          <Form.Group controlId="nombre" className="mb-3">
-            <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-              isInvalid={nombreError !== ''}
-            />
-            <Form.Control.Feedback type="invalid" className="error-message">
-              {nombreError}
-            </Form.Control.Feedback>
-          </Form.Group>
+    <>
+      <Modal show={true} onHide={handleClose} centered className='m-0 p-0'>
+        <Modal.Header closeButton>
+          <Modal.Title>{titulo}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form noValidate onSubmit={handleSubmit}>
+            <Form.Group controlId="nombre" className="mb-3">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+                isInvalid={nombreError !== ''}
+              />
+              <Form.Control.Feedback type="invalid" className="error-message">
+                {nombreError}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <Form.Group controlId="descripcion" className="mb-3">
-            <Form.Label>Descripción</Form.Label>
-            <Form.Control
-              as="textarea"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              required
-              isInvalid={descripcionError !== ''}
-            />
-            <Form.Control.Feedback type="invalid" className="error-message">
-              {descripcionError}
-            </Form.Control.Feedback>
-          </Form.Group>
+            <Form.Group controlId="descripcion" className="mb-3">
+              <Form.Label>Descripción</Form.Label>
+              <Form.Control
+                as="textarea"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                required
+                isInvalid={descripcionError !== ''}
+              />
+              <Form.Control.Feedback type="invalid" className="error-message">
+                {descripcionError}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          <Form.Group controlId="precio" className="mb-3">
-            <Form.Label>Precio</Form.Label>
-            <Form.Control
-              type="number"
-              step="0.01"
-              value={precio}
-              onChange={(e) => setPrecio(e.target.value)}
-              isInvalid={precioError !== ''}
-            />
-            {precioError && <Form.Control.Feedback type="invalid">{precioError}</Form.Control.Feedback>}
-          </Form.Group>
+            <Form.Group controlId="precio" className="mb-3">
+              <Form.Label>Precio</Form.Label>
+              <Form.Control
+                type="number"
+                step="0.01"
+                value={precio}
+                onChange={(e) => setPrecio(e.target.value)}
+                isInvalid={precioError !== ''}
+              />
+              {precioError && <Form.Control.Feedback type="invalid">{precioError}</Form.Control.Feedback>}
+            </Form.Group>
 
-          <Form.Group controlId="cantidad" className="mb-3">
-            <Form.Label>Cantidad</Form.Label>
-            <Form.Control
-              type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
-              isInvalid={cantidadError !== ''}
-            />
-            {cantidadError && <Form.Control.Feedback type="invalid">{cantidadError}</Form.Control.Feedback>}
-          </Form.Group>
+            <Form.Group controlId="cantidad" className="mb-3">
+              <Form.Label>Cantidad</Form.Label>
+              <Form.Control
+                type="number"
+                value={cantidad}
+                onChange={(e) => setCantidad(e.target.value)}
+                isInvalid={cantidadError !== ''}
+              />
+              {cantidadError && <Form.Control.Feedback type="invalid">{cantidadError}</Form.Control.Feedback>}
+            </Form.Group>
 
-          <Form.Group controlId="categoria" className="mb-3">
-            <Form.Label>Categoría</Form.Label>
-            <Form.Control
-              as="select"
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-              isInvalid={categoriaError !== ''}
-            >
-              <option value="">Seleccionar categoría</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nombre}
-                </option>
-              ))}
-            </Form.Control>
-            {categoriaError && <Form.Control.Feedback type="invalid">{categoriaError}</Form.Control.Feedback>}
-          </Form.Group>
+            <Form.Group controlId="categoria" className="mb-3">
+              <Form.Label>Categoría</Form.Label>
+              <Form.Control
+                as="select"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                isInvalid={categoriaError !== ''}
+              >
+                <option value="">Seleccionar categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </Form.Control>
+              {categoriaError && <Form.Control.Feedback type="invalid">{categoriaError}</Form.Control.Feedback>}
+            </Form.Group>
 
-          <Form.Group controlId="ingredientes" className="mb-3">
-            <Form.Label>Ingredientes</Form.Label>
-            <div style={{ maxHeight: '100px', overflowY: 'scroll' }}>
-              {ingredientes.map((ingrediente) => (
-                <Form.Check
-                  key={ingrediente.id}
-                  type="checkbox"
-                  id={ingrediente.id}
-                  label={ingrediente.nombre}
-                  value={ingrediente.id}
-                  checked={ingredientesSeleccionados.includes(ingrediente.id)}
-                  onChange={handleCheckboxChange}
-                  isInvalid={ingredienteError !== ''}
-                />
-              ))}
-            </div>
-            {ingredienteError && <div className="text-danger">{ingredienteError}</div>}
-          </Form.Group>
+            <Form.Group controlId="ingredientes" className="mb-3">
+              <Form.Label>Ingredientes</Form.Label>
+              <div style={{ maxHeight: '100px', overflowY: 'scroll' }}>
+                {ingredientes.map((ingrediente) => (
+                  <Form.Check
+                    key={ingrediente.id}
+                    type="checkbox"
+                    id={ingrediente.id}
+                    label={ingrediente.nombre}
+                    value={ingrediente.id}
+                    checked={ingredientesSeleccionados.includes(ingrediente.id)}
+                    onChange={handleCheckboxChange}
+                    isInvalid={ingredienteError !== ''}
+                  />
+                ))}
+              </div>
+              {ingredienteError && <div className="text-danger">{ingredienteError}</div>}
+            </Form.Group>
 
-          <Form.Group controlId="imagen" className="mb-3">
-            <Form.Label>Imagen</Form.Label>
-            <Form.Control type="file" onChange={handleImageChange} accept="image/*" />
-            {imagenError && <div className="text-danger">{imagenError}</div>}
-          </Form.Group>
+            <Form.Group controlId="imagen" className="mb-3">
+              <Form.Label>Imagen</Form.Label>
+              <Form.Control type="file" onChange={handleImageChange} accept="image/*" />
+              {imagenError && <div className="text-danger">{imagenError}</div>}
+            </Form.Group>
 
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCancel}>
-              Cancelar
-            </Button>
-            <Button variant="primary" type="submit">
-              {titulo}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal.Body>
-    </Modal>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCancel}>
+                Cancelar
+              </Button>
+              <Button variant="primary" type="submit">
+                {titulo}
+              </Button>
+            </Modal.Footer>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      <CustomAlert
+        message={messageAlert}
+        show={showAlert}
+        duration={durationAlert}
+        onDismiss={handleDismiss}
+      />
+    </>
   );
 }
