@@ -367,7 +367,7 @@ export default function FormPocion({ handleClose, fetchPotions, fetchIngrediente
               Cancelar
             </Button>
             <Button variant="primary" type="submit">
-              Crear Poción
+              {titulo}
             </Button>
           </Modal.Footer>
         </Form>
